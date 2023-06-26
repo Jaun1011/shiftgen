@@ -13,9 +13,10 @@ export const projectShifts = controller => {
         const shiftElements = Array.from(dom(`
             <div>${shift.id}</div>
             <input               value="${shift.name}"   >
-            <input type="number" value="${shift.weight}" >
+            <input type="number" value="${shift.weight}" disabled >
             <button>-</button>
         `));
+
         const removebutton = shiftElements[3];
 
         shiftElements.forEach(s  => shifts.append(s));
