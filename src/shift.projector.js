@@ -1,78 +1,45 @@
-
-const dom = innerString => {
-    const holder = document.createElement("DIV");
-    holder.innerHTML = innerString;
-    return holder.children;
-};
-
-const projectTime = controller => {
-
-    const timeElements = document.createElement("div");
-
-    timeElements.innerHTML = `
-        <label for="time-input">times</label>
-        <input id="time-input" value="${controller.getTime()}" type="number">
-    `;
-
-    const timeInput = timeElements.children[1];
-    timeInput.onchange = _ => controller.setTime(timeInput.value);
-
-    return timeElements;
-}
-
-const projectShift = (controller, shift) =>   {
-
-    const shiftElement = document.createElement("div");
-    shiftElement.setAttribute("class", "");
-
-    shiftElement.innerHTML = `
-        <div>${shift.id}</div>     
-        <div>${shift.name}</div>
-        <input value="${shift.weight}" type="number"> 
-        <button>remove</button>
-    `;
-
-    const removeElement = shiftElement.getElementsByTagName("button")[0];
-
-    removeElement.onclick = _ => {
-        controller.delShift(shift);
-        shiftElement.remove()
-    };
-
-    return shiftElement;
-}
-
-
-const projectNewShift = controller => {
-    const input = document.createElement("div");
-    input.innerHTML = `
-        <input>
-        <input type="number" value="1">
-        <button>add shift</button>
-    `;
-
-    const [shiftName, shiftWeight, addButton] = input.children;
-    addButton.onclick = _ => controller.addShift(shiftName.value, shiftWeight.value);
-
-    return input;
-}
-
-
-
-
+import {dom} from "../lib/dom.js";
 
 
 export const projectShifts = controller => {
-    const timeSetup = projectTime(controller);
+
+    const root = document.createElement("div");
+    root.innerHTML = `<h2>Shifts</h2>`;
+
     const shifts    = document.createElement("div");
-    controller.onAddShift( shift => shifts.appendChild( projectShift(controller, shift) ) );
+    shifts.setAttribute("class", "shifts")
 
-    const newShift = projectNewShift(controller);
-    const root     = document.createElement("div");
+    controller.onAddShift(shift => {
+        const shiftElements = Array.from(dom(`
+            <div>${shift.id}</div>
+            <input               value="${shift.name}"   >
+            <input type="number" value="${shift.weight}" >
+            <button>-</button>
+        `));
+        const removebutton = shiftElements[3];
 
-    root.appendChild(timeSetup);
-    root.appendChild(shifts);
-    root.appendChild(newShift);
+        shiftElements.forEach(s  => shifts.append(s));
 
+        removebutton.onclick = _ => {
+            controller.delShift(shift);
+            shiftElements.forEach(e => e.remove());
+        };
+    })
+
+    const  [id, shiftName, shiftWeight, addButton]  = dom(`
+        <strong>#</strong>
+        <input value="shift">
+        <input value="1" type="number">
+        <button>+</button>   
+    `);
+
+
+
+
+
+    addButton.onclick = _ => controller.addShift(shiftName.value, shiftWeight.value);
+    [id, shiftName, shiftWeight, addButton] .forEach(i => shifts.append(i))
+
+    root.append(shifts);
     return root;
 }

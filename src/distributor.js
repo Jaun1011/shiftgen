@@ -33,6 +33,10 @@ export const blocked = (wid, times, worker_shifts) => worker_shifts
 
 
 export const distribute = (workers, shifts, worker_shifts, times) => {
+
+    workers.forEach(w => w.balance = 0);
+
+
     for (let time = 0; time < times; time++) {
         shifts
             .filter(s => !s.disabled)
